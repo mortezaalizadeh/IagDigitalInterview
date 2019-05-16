@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using Flurl.Http.Testing;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VehicleSummary.Api.Services.ConfigReader;
 using VehicleSummary.Api.Services.VehicleSummary;
@@ -18,16 +19,17 @@ namespace VehicleSummary.UnitTests.ServicesTests.VehicleSummaryTests.VehicleSumm
         public APIsTests(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
-            _mockedConfigReaderService = A.Fake<IConfigReaderService>();
+            var mockedConfigReaderService = A.Fake<IConfigReaderService>();
 
-            A.CallTo(() => _mockedConfigReaderService.GetIagBaseUrl()).Returns(_iagBaseUrl);
-            A.CallTo(() => _mockedConfigReaderService.GetSubscriptionKey()).Returns(_subscriptionKey);
+            A.CallTo(() => mockedConfigReaderService.GetIagBaseUrl()).Returns(_iagBaseUrl);
+            A.CallTo(() => mockedConfigReaderService.GetSubscriptionKey()).Returns(_subscriptionKey);
 
-            _service = new VehicleSummaryService(_mockedConfigReaderService);
+            var mockedLogger = A.Fake<ILogger<VehicleSummaryService>>();
+
+            _service = new VehicleSummaryService(mockedConfigReaderService, mockedLogger);
         }
 
         private readonly ITestOutputHelper _testOutputHelper;
-        private readonly IConfigReaderService _mockedConfigReaderService;
         private readonly VehicleSummaryService _service;
         private readonly string _iagBaseUrl = "http://localhost/api";
         private readonly string _subscriptionKey = Guid.NewGuid().ToString();

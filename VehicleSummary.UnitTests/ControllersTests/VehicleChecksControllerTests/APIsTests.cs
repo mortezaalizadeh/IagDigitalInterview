@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VehicleSummary.Api.Controllers;
 using VehicleSummary.Contracts;
 using VehicleSummary.Contracts.Models;
@@ -16,11 +17,13 @@ namespace VehicleSummary.UnitTests.ControllersTests.VehicleChecksControllerTests
         public APIsTests()
         {
             _mockedVehicleSummaryService = A.Fake<IVehicleSummaryService>();
-            _controller = new VehicleChecksController(_mockedVehicleSummaryService);
+            _mockedLogger = A.Fake<ILogger<VehicleChecksController>>();
+            _controller = new VehicleChecksController(_mockedVehicleSummaryService, _mockedLogger);
         }
 
         private readonly VehicleChecksController _controller;
         private readonly IVehicleSummaryService _mockedVehicleSummaryService;
+        private readonly ILogger<VehicleChecksController> _mockedLogger;
 
         [Fact]
         public async Task Call_GetModelsByMake_with_given_make()
@@ -38,7 +41,7 @@ namespace VehicleSummary.UnitTests.ControllersTests.VehicleChecksControllerTests
                 .CallTo(() => _mockedVehicleSummaryService.GetYearsByMakeAndModel(A<string>.Ignored, A<string>.Ignored))
                 .Returns(yearsByModel.Where(item => item.Name == model).Select(item => item.YearsAvailable).ToList()));
 
-            await _controller.Makes(make);
+            await _controller.GetVehicleSummaryByMake(make);
 
             A.CallTo(() => _mockedVehicleSummaryService.GetModelsByMake(make))
                 .MustHaveHappened();
@@ -60,7 +63,7 @@ namespace VehicleSummary.UnitTests.ControllersTests.VehicleChecksControllerTests
                 .CallTo(() => _mockedVehicleSummaryService.GetYearsByMakeAndModel(A<string>.Ignored, A<string>.Ignored))
                 .Returns(yearsByModel.Where(item => item.Name == model).Select(item => item.YearsAvailable).ToList()));
 
-            await _controller.Makes(make);
+            await _controller.GetVehicleSummaryByMake(make);
             models.ForEach(model =>
                 A.CallTo(() => _mockedVehicleSummaryService.GetYearsByMakeAndModel(make, model)).MustHaveHappened());
         }
@@ -81,7 +84,7 @@ namespace VehicleSummary.UnitTests.ControllersTests.VehicleChecksControllerTests
                 .CallTo(() => _mockedVehicleSummaryService.GetYearsByMakeAndModel(make, model))
                 .Returns(yearsByModel.Where(item => item.Name == model).Select(item => item.YearsAvailable).ToList()));
 
-            var response = await _controller.Makes(make);
+            var response = await _controller.GetVehicleSummaryByMake(make);
 
             Assert.NotNull(response);
 
@@ -105,7 +108,7 @@ namespace VehicleSummary.UnitTests.ControllersTests.VehicleChecksControllerTests
             A.CallTo(() => _mockedVehicleSummaryService.GetModelsByMake(A<string>.Ignored))
                 .ThrowsAsync(new Exception());
 
-            Assert.ThrowsAsync<Exception>(() => _controller.Makes(Guid.NewGuid().ToString()));
+            Assert.ThrowsAsync<Exception>(() => _controller.GetVehicleSummaryByMake(Guid.NewGuid().ToString()));
         }
 
         [Fact]
@@ -121,7 +124,7 @@ namespace VehicleSummary.UnitTests.ControllersTests.VehicleChecksControllerTests
             A.CallTo(() => _mockedVehicleSummaryService.GetYearsByMakeAndModel(A<string>.Ignored, A<string>.Ignored))
                 .ThrowsAsync(new Exception());
 
-            Assert.ThrowsAsync<Exception>(() => _controller.Makes(Guid.NewGuid().ToString()));
+            Assert.ThrowsAsync<Exception>(() => _controller.GetVehicleSummaryByMake(Guid.NewGuid().ToString()));
         }
     }
 }
