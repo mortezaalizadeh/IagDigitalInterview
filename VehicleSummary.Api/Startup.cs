@@ -31,6 +31,8 @@ namespace VehicleSummary.Api
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.Configure<Config>(Configuration.GetSection("Config"));
+
             _logger.LogInformation(LoggingEvents.Startup, "Bootstrapping the DI ...");
 
             services.AddScoped<IVehicleSummaryService, VehicleSummaryService>();

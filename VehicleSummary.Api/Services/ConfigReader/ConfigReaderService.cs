@@ -1,15 +1,24 @@
-﻿namespace VehicleSummary.Api.Services.ConfigReader
+﻿using Microsoft.Extensions.Options;
+
+namespace VehicleSummary.Api.Services.ConfigReader
 {
     public class ConfigReaderService : IConfigReaderService
     {
+        private readonly IOptions<Config> _config;
+
+        public ConfigReaderService(IOptions<Config> config)
+        {
+            _config = config;
+        }
+
         public string GetIagBaseUrl()
         {
-            return "https://api.iag.co.nz/vehicles/vehicletypes";
+            return _config.Value.IagBaseUrl;
         }
 
         public string GetSubscriptionKey()
         {
-            return "72ec78fb999e43be8dbdac94d7236cae";
+            return _config.Value.SubscriptionKey;
         }
     }
 }
