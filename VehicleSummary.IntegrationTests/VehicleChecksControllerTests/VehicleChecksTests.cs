@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using VehicleSummary.Api;
 using VehicleSummary.Contracts.Responses;
@@ -10,9 +11,9 @@ using Xunit;
 
 namespace VehicleSummary.IntegrationTests.VehicleChecksControllerTests
 {
-    public class VehicleChecksTests : IClassFixture<CustomWebApplicationFactory<Startup>>
+    public class VehicleChecksTests : IClassFixture<WebApplicationFactory<Startup>>
     {
-        public VehicleChecksTests(CustomWebApplicationFactory<Startup> factory)
+        public VehicleChecksTests(WebApplicationFactory<Startup> factory)
         {
             _client = factory.CreateClient();
         }
