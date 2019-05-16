@@ -1,43 +1,39 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Flurl;
 using Flurl.Http;
-
+using VehicleSummary.Api.Services.ConfigReader;
+using VehicleSummary.Contracts;
 
 namespace VehicleSummary.Api.Services.VehicleSummary
-
 {
-    public interface IVehicleSummaryService
-    {
-        Task<VehicleSummaryResponse> GetSummaryByMake(string make);
-    }
-    
     public class VehicleSummaryService : IVehicleSummaryService
     {
-        public async Task<VehicleSummaryResponse> GetSummaryByMake(string make)
+        private readonly IConfigReaderService _configReaderService;
+
+        public VehicleSummaryService(IConfigReaderService configReaderService)
         {
-            throw new NotImplementedException();
+            _configReaderService = configReaderService ?? throw new ArgumentNullException(nameof(configReaderService));
         }
 
-        
-        /*
-         Here's a small helper. We're using Flurl for http requests. (Change it if you wish)
-         https://flurl.dev/
-            
-        async Task<List<string>> getModels(string make)
-        {   
-            var modelsUrl = "https://api.iag.co.nz/vehicles/vehicletypes/makes/Lotus/models?api-version=v1";
+        public async Task<List<string>> GetModelsByMake(string make)
+        {
+            var modelsUrl = $"{_configReaderService.GetIagBaseUrl()}/makes/{make}/models";
 
-            var response = await modelsUrl
-                .WithHeader("Ocp-Apim-Subscription-Key", "72ec78fb999e43be8dbdac94d7236cae")
+            return await modelsUrl.WithHeader("Ocp-Apim-Subscription-Key", _configReaderService.GetSubscriptionKey())
+                .SetQueryParam("api-version", "v1")
                 .GetJsonAsync<List<string>>();
-                
-            return response;
-              
         }
-        */
-        
-        
+
+        public async Task<List<int>> GetYearsByMakeAndModel(string make, string model)
+        {
+            var modelsUrl = $"{_configReaderService.GetIagBaseUrl()}/makes/{make}/models/{model}/years";
+
+            return (await modelsUrl
+                .WithHeader("Ocp-Apim-Subscription-Key", _configReaderService.GetSubscriptionKey())
+                .SetQueryParam("api-version", "v1")
+                .GetJsonAsync<List<string>>()).Select(year => Convert.ToInt32(year)).ToList();
+        }
     }
 }
