@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/vehicle-checks/makes/Lotus",
+      "launchUrl": "vehicle-checks/makes/Lotus",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -8,7 +8,7 @@ using VehicleSummary.Contracts.Responses;
 
 namespace VehicleSummary.Api.Controllers
 {
-    [Route("api/vehicle-checks")]
+    [Route("vehicle-checks")]
     [ApiController]
     public class VehicleChecksController : Controller
     {
